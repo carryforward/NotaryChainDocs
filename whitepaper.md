@@ -1,26 +1,30 @@
 NotaryChains
 ============
-*Creating a ledger of record for Bitcoin 2.0 applications, secured with the Bitcoin block chain*
+*Proof of Process*
 
 Abstract
 --------
 
-NotaryChains create a Protocol Stack for Bitcoin 2.0 applications.  NotaryChains extends the idea of "Proof of Existence" to include "Proof of Process."
+NotaryChains as a design resulted from an effort to distill the design of a framework down to its most simple and basic components.  The result is a general Protocol Stack for building new currencies, smart contracts, smart properties, etc.  
 
-NotaryChains allow Bitcoin 2.0 applications to define tokens and communications without having to reinvent a public ledger, wallets, etc. Efforts to use Bitcoin for Bitcoin 2.0 applications (i.e. applications not primarily about exchanging currency) must face restrictions on data that can be stored on the Bitcoin blockchain.  NotaryChains are secured by Bitcoin (periodically hashes of the notary blocks of NotaryChains are inserted into the Bitcoin blockchain).  These notary blocks are lists of entries which can be crafted to support a wide range of applications.  Entries cannot be changed without breaking the hashes, which are secured by Bitcoin.
+The most basic layer in this protocol stack collects into a "notary block" the hashes of digital artifacts (spreadsheets, text files, structured data, media, etc.).  This notary block is hashed itself, and that hash is placed into the Bitcoin block chain, and a new notary block is begun.  Because hashes are one way functions, the existence of the hash in the Bitcoin block chain is proof that all the hashes in the notary block existed at that time.  This is because you can create a hash from a digital artifact, but you cannot fit a digital artifact to an existing hash.  Likewise, the existence of a hash in a notary block proves the existence of the digital artifact.  The construction of notary blocks limits the data entered into the Bitcoin block chain.
 
-Proof of Process is created by chaining entries to track changes over time.  Each such "notary chain" can have its own rules and restrictions. This architecture allows for the easy construction of tokens or coins, securities, smart contracts, etc.   A system of automatic audits, federated NotaryChain Servers, and cryptographic signatures insures that the entries in each notary chain are valid.
+The "entry layer" sits on top of the proof of existence layer to provide the user with a structure for holding meta data about what is being secured by the proof of existence layer, and the Bitcoin blockchain. 
+
+The "notary chain" layer allows the linking of entries together, and it specifies the rules required for these links.  Each notary chain then can have its own rules governing what entries are accepted as links in that chain.  
+
+NotaryChains are run upon a set of federated servers that implement a set of policies that drive their behaviors.  These polices are subject to real time audits, and the NotaryChain servers use a system of audits to provide users proof that the servers are implementing these policies.  This system of audits is referred to as Proof by Audit. 
 
 Introduction
 ------------
 
 Bitcoin is disrupting the status quo for online payments.  With Bitcoin, payments can be made worldwide without any centralized party or parties.  The success and elegance of Bitcoin has inspired many others to seek ways of decentralizing more than just payment systems.  Many have observed that the blockchain could enable the trading of commodities, trading of assets, issuing  securities, implementing self enforcing smart contracts, crowd sourced loans, etc.  The set of such extended applications is often referred to as "Bitcoin 2.0"
 
-NotaryChains simplifies how Bitcoin 2.0 can be deployed.  Much as TCP/IP solves one problem, the exchange of packets, NotaryChains seek to solve the foundational problem of Bitcoin 2.0.   NotaryChains do so by providing a few simple operators from which many more complicated operations can be built.  NotaryChains extends Bitcoin beyond the exchange of bitcoins to include the recording and management of arbitrary events (entries in NotaryChains), and chains of such events (sequences of entries referred to as notary chains).
+NotaryChains simplifies how Bitcoin 2.0 applications can be deployed.   NotaryChains seek to solve the foundational problem of Bitcoin 2.0.   NotaryChains do so by providing a few simple operators from which many more complicated operations can be built.  NotaryChains extends Bitcoin beyond the exchange of bitcoins to include the recording and management of arbitrary events (entries in NotaryChains), and chains of such events (sequences of entries referred to as notary chains).
 
 Consider what any Bitcoin 2.0 application requires:
 
-* Structured events that include additional information.
+* Structured events that may include additional information beyond that captured by a Bitcoin transaction.
 * An ordered, cryptographically secured public ledger recording each event 
 * Unambiguously defined sequences of events
 * Unambiguously defined rules governing sequences of events
@@ -38,7 +42,7 @@ NotaryChains is designed to meet these requirements.  NotaryChains implements a 
 
 **The Notary Layer**
 
-The Notary layer implements proof of existence for an digital artifiact.  Any event, document, image, recording, etc. that is defined in a digital representation can be hashed.  That hash can be recorded in the notary layer.  Because of the vast difficulty and complexity of finding a digital document that will fit a particular hash, the mere recording of such a hash is proof of the digital document’s existence at the time of the recording of the hash.
+The Notary layer implements proof of existence for an digital artifact.  Any event, document, image, recording, etc. that is defined in a digital representation can be hashed.  That hash can be recorded in the notary layer.  Because of the vast difficulty and complexity of finding a digital document that will fit a particular hash, the mere recording of such a hash is proof of the digital document’s existence at the time of the recording of the hash.
 
 NotaryChains collects sets of such hashes into a notary block.  The notary block is then hashed, and that hash is recorded into the Bitcoin block chain.  This allows the most minimum expansion of the Bitcoin block chain, yet the ledger itself becomes as secure as Bitcoin itself.  Furthermore, since NotaryChains can be maintained more cheaply in terms of resources, the cost of entries into the notary layer will be much cheaper than transactions in the Bitcoin block chain.
 
@@ -123,26 +127,15 @@ Yet even if the data in NotaryChain servers expand to many terabytes in size, th
 
 *Figure 1: Diagram showing that Notary Blocks are linked together, and the has of each Notary Block is inserted into the Bitcoin Block Chain.*
 
-Notary Chains are held within a series of Notary Blocks.  The contents of the Notary Block is hashed periodically.  And every so often, the last hash of the Notary Block is inserted into the Bitcoin Block Chain, as shown by Figure 1.  That is all NotaryChains insert into the Bitcoin Blockchain.  With the single insertion, the Notary Block can be provably unalterable (as it would break the hash in the Bitcoin Block Chain).  How the Notary Blocks document their inclusion into the Bitcoin BlockChain is discussed in more detail later.
+The proof of existence hashes are held within a series of Notary Blocks.  Every so often, the current notary block is hashed, and that hash is inserted into the Bitcoin Block Chain, as shown by Figure 1.  The periodic hash is all that is inserted into the Bitcoin Blockchain.  With the single hash, the Notary Block can be provably unalterable (as it would break the hash recorded in the Bitcoin Block Chain).  We are looking at different ways to create a link to this hash from the notary block. 
 
-A Notary Block is created after the previous Notary Block has had its last Hash submitted to the Bitcoin BlockChain.  A new Notary Block begins with a Block ID (one greater than the last), and the transaction hash for the six previous Notary Blocks.   We record six transaction hashes since a transaction hash is mailable and could change.  This is to simplify the lookup of Notary Block hashes in the Bitcoin Blockchain. If a blockchain reorganization changes  the transaction hash, that doesn’t remove the Notary Block’s hash from the Bitcoin Blockchain.
+A Notary Block is created immediately after the previous Notary Block is slated to have its Hash submitted to the Bitcoin BlockChain.  A new Notary Block begins with a Block ID (one greater than the last).
 
 ![Figure 2](images/fig2.png)
 
 *Figure 2:  Internal structure of a Notary Block.*
 
-As each Notary Entry is submitted, it is added to the Notary Block, and every so often, a running hash is computed that combindes the hash of the new entry with the previous entries, and that hash is added to the Notary Block.  This prevents any modification of Notary Entries once added to the Notary Block, since any modification of a Notary Entry would break the hash of that entry, and all the hashes that follow. 
-
-For Example, Suppose we ad4 8 Entries (A-D).  The Notary Block would look like this:
-
-1. A
-2. h(A) 
-3. B
-4. h( h(2) + h(B) )
-5. C
-6. h( h(4) + h(C) )
-7. D
-8. h( h(6) + h(D) )
+As each Notary Entry is submitted, it is added to the Notary Block, along with a type, and a timestamp.  For a simple proof of existence entry, the type will be 0.  Other types provide indexes and information that link to information held in entries and chains.
 
 #A Simple Notary Entry
 
@@ -152,7 +145,7 @@ Any number of Notary entries can be added to a Notary Block, and remain secured 
 
 *Figure 3: Internal structure of a Notary Entry*
 
-Figure 3 shows a simple Notary Entry.  It is a type Entry (denoting a simple entry).  A simple entry has does not receive any validity checking by the NotaryChain server outside of verifying the signatures, if any are provided.  The user provides the entry, structured data, and the signatures (if desired) for the structured data.  If signatures are provided, but do not validate against the structured data provided, then the entry will be rejected. The NotaryChain service adds the entry type and time stamp, and adds the entry to the current Notary Block.
+Figure 3 shows a simple Notary Entry.  It is composed of structured data (pretty much whatever data the user wants to provide), a reverse hash (a token system used by NotaryChains to control access) and one or more signatures.  A simple entry has does not receive any validity checking by the NotaryChain server outside of verifying the signatures, if any are provided.  The user provides the entry, structured data, and the signatures (if desired) for the structured data.  If signatures are provided, but do not validate against the structured data provided, then the entry will be rejected. The NotaryChain hashes the entry and signatures, then adds that hash to the notary block (per figure 2).  The notary block adds the entry type 1 (simple entry) and the time stamp at the notary block level.
 
 While a user can use the Structured Data section to implement a range of protocols like tokens, smart contracts, smart properties, etc., NotaryChains provide some generic support for these features.  The support for NotaryChains within NotaryChain servers is necessary to make the NotaryChain Servers auditable in real time for many common functions by its users, and by other Federated NotaryChain Servers.   Federated NotaryChain servers provide the redundancy and cross checking required for the security of many applications that may wish to run on top of NotaryChains.
 
@@ -165,18 +158,18 @@ NotaryChains are chains of Notary Entries. A Notary Chain provides the infrastru
 
 *Figure 4] Structure of the first link in a Notary Chain, i.e. a chain of Notary entries*
 
-A Start Link begins a Notary Chain.  It looks just like a simple entry, except for its type, and the fact that the Structured Description must include a “VScript” entry.   Many chains could be validated privately.  In other words, the validation rules for the chain can be published (and notarized) and any attempt to fraudulently add links to the chain are invalidated by the rules published by the parties starting the NotaryChain.  In fact, a reference implementation of an application that validates a NotaryChain can be hashed and secured in the Start Link for a NotaryChain. That application in combination with the published rules for the NotaryChain, rather than the NotaryChain server, would be responsible for validating that NotaryChain. 
+A Start Link begins a Notary Chain.  It looks just like a simple entry, but is typed as a chain.  (The specification for the types for chains is under discussion.) The Structured Description must include a “VScript” entry.   Many chains could be validated privately.  In other words, the validation rules for the chain can be published (and notarized via the Start Link) and any attempt to fraudulently add links to the chain are invalidated by the rules published by the parties starting the NotaryChain.  In fact, a reference implementation of an application that validates a NotaryChain should be hashed and secured in the Start Link for a NotaryChain. That application in combination with the published rules for the NotaryChain, rather than the NotaryChain server, would be responsible for validating that NotaryChain. 
 
-Still, there is some use in creating an Account NotaryChain supported by NotaryChain servers, if for no other reason that to allow the group purchase of notary entries by customers.   Because of the reduced overhead of NotaryChains, these can be made available at rates far cheaper than Bitcoin Transactions.
+Still, there is some use in creating an Account NotaryChain supported by NotaryChain servers, if for no other reason that to allow the group purchase of notary entries by users of NotaryChains.   Because of the reduced overhead of NotaryChains, these can be made available at rates far cheaper than Bitcoin Transactions.
 
-An Account NotaryChain is enforced by the NotaryChain Server.  And it serves as an example for creating user defined chains.  The Start Link for an Account Notary Chain looks like this:
+An Account NotaryChain is enforced by the NotaryChain Server.  And it serves as an example for creating user defined chains.  The Start Link for an Account Notary Chain might look like this:
 
 ```
 NE Type: 	Start Link
-Structured Description:	{ 	"type" : "NC*account" , 
+Structured Description:	{  
     "vscript" : "<sig> <pubKey> OP_CHECKSIG"
     "val" : 1000 }
-Signature:	<sig1> <sig2> … <sigN>
+Signature:	<sig> 
 ```
 
 
@@ -201,14 +194,14 @@ Each Notary Server must provide access to their Notary Blocks to the other Notar
 #Crowd funding
 NotaryChains will use a token system for paying for entries to be placed on into notary blocks secured by NotaryChains.  Some token is necessary to prevent spamming or attacking the system.  
 
-##NotaryChain Zero (NCZ)
-NCO will be used for paying to create NotaryChain Specifications, start new NotaryChains using those specifications, and adding entries into NotaryChains.  It is very possible that NCZ will be perfect.  But in the event that we need to create an all new version, it will be followed with NC1, NC2, etc.    To reward early adopters, holders of NCZ will automatically be rewarded a stake in following coin versions.  What percentage is still being considered.
+##Notary Coins (XNC)
+Notary Coins will be used for paying to create NotaryChain Specifications, start new NotaryChains using those specifications, and adding entries into NotaryChains.  Notary Coins will be tracked in a Notary Chain, and will be generated to provide incentives for running the Federated Notary Chain servers, run independent audits, and other behaviors.  Because Notary Coins are tracked on Notary Chain servers directly, they can be used to automate payments for entries and chains directly.
 
-The outline of our distribution of NCZ is as follows:
+We plan to fund the development of NotaryChains using their tokens.  While we are building the infrastructure, we will use the Mastercoin Protocol as a temporary representation of the Notary Coins as Master Notary Coins.  Once the launch of Notary Chains is final, the Master Notary Coins will be converted to native Notary Coins. The outline of the distribution of Notary Chains is still being discussed, but a possible structure is as follows:
 
 * Algorithm:  Mastercoin Protocol 
 * Block Time: 10 minutes
-* Total Coins: 10,000,000 NCZ
+* Total Coins: 10,000,000 XNC
 * Coin Distribution:
  * 10% -- Auditing
  * 10% -- Core Developers
@@ -217,9 +210,8 @@ The outline of our distribution of NCZ is as follows:
  * 50% -- Federated SErvers
 
 # Disclosures
-1. NotaryChain coins (NCZ) are not Stock or Equity Participation in the crowd sale will not provide you with a "security" or "equity" stake in this 
-project. The digital token known as Notary Chain Zero is only useful for creating and using notary chains on Notary Chain servers 
-after development is complete. 
+1. NotaryChain coins (XNC) are not a Stock or Equity.  Participation in the crowd sale will not provide you with a "security" or "equity" stake in this 
+project. The digital token known as Notary Coins is only useful for creating and using notary chains on Notary Chain servers after development is complete. 
 
 #Bibliography
 
